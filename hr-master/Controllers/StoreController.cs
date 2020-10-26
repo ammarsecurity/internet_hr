@@ -776,6 +776,8 @@ namespace hr_master.Controllers
 
 
         }
+
+
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddfollowerTask([FromBody] AddTaskFollowers form)
 
@@ -976,7 +978,8 @@ namespace hr_master.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
@@ -986,7 +989,7 @@ namespace hr_master.Controllers
 
 
             Task.Task_Employee_WorkOn = _clientid;
-            Task.Task_Open = DateTime.Now;
+            Task.Task_Open = time1;
             Task.Task_Status = 2;
 
 

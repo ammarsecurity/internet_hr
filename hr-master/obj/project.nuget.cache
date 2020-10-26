@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1EIViN5wtRLniaKN/Ex6lm/kgigYzaPcRAKuEldRjjniRrSUue+M6/0zfX89Anj+kN4+v5kcmS/K7jSmA7PJ1w==",
+  "dgSpecHash": "AULQgFDetX+If5LbuYFT72p/uwkNP+CkkKYxJA/WB1PjSLA/j59ogYamlnWm7jSL+/XTWWiVU3mrU2S4g/Gy7w==",
   "success": true,
-  "projectFilePath": "E:\\hr-master1\\hr-master\\hr-master.csproj",
+  "projectFilePath": "E:\\internet_hr\\internet_hr\\hr-master\\hr-master.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\amarr\\.nuget\\packages\\bouncycastle.netcore\\1.8.3\\bouncycastle.netcore.1.8.3.nupkg.sha512",
     "C:\\Users\\amarr\\.nuget\\packages\\dapper\\1.60.6\\dapper.1.60.6.nupkg.sha512",

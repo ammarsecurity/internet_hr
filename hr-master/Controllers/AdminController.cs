@@ -1335,7 +1335,8 @@ namespace hr_master.Controllers
 
 
 
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -1343,7 +1344,7 @@ namespace hr_master.Controllers
             var NewTask = new Tasks
             {
                 Task_Title = form.Task_Title,
-                Task_Date = form.Task_Date,
+                Task_Date = time1,
                 Task_Employee_Open = Guid.Parse("3ef34045-bbbb-49e6-880e-7e7bcb9c9a16"),
                 Task_part = form.Task_part,
                 Task_Price_rewards = form.Task_Price_rewards,
@@ -1419,7 +1420,8 @@ namespace hr_master.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
@@ -1429,7 +1431,7 @@ namespace hr_master.Controllers
 
 
             Task.Task_Employee_Close = Guid.Parse("3ef34045-bbbb-49e6-880e-7e7bcb9c9a16");
-            Task.Task_Done = DateTime.Now;
+            Task.Task_Done = time1;
             Task.Task_Status = 3;
             Task.Task_closed_Note = from.Task_closed_Note;
 
@@ -1724,7 +1726,7 @@ namespace hr_master.Controllers
                             EmployeeInOut = "وقت الدخول" + " " + employee.Employee_In_Time + " - " + "وقت الخروج" + " " + employee.Employee_Out_Time,
                             distance = inout.distance,
                             locationurl = "https://www.google.com/maps/@"+ inout.Employee_Latitude+","+ inout.Employee_Longitude,
-                            InOut_time = inout.In_Out_Date.ToString("HH:mm:ss")
+                            InOut_time = inout.In_Out_Time
 
 
                           }).ToList();

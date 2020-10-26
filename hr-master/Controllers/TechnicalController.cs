@@ -446,14 +446,15 @@ namespace hr_master.Controllers
 
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
             var Task = _context.Tasks.Where(x => x.Id == TaskId).FirstOrDefault();
 
 
 
 
             Task.Task_Employee_WorkOn  = _clientid ;
-            Task.Task_Open = DateTime.Now;
+            Task.Task_Open = time1;
             Task.Task_Status = 2;
       
 

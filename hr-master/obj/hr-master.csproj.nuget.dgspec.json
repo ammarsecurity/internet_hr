@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\hr-master1\\hr-master\\hr-master.csproj": {}
+    "E:\\internet_hr\\internet_hr\\hr-master\\hr-master.csproj": {}
   },
   "projects": {
-    "E:\\hr-master1\\hr-master\\hr-master.csproj": {
+    "E:\\internet_hr\\internet_hr\\hr-master\\hr-master.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\hr-master1\\hr-master\\hr-master.csproj",
+        "projectUniqueName": "E:\\internet_hr\\internet_hr\\hr-master\\hr-master.csproj",
         "projectName": "hr-master",
-        "projectPath": "E:\\hr-master1\\hr-master\\hr-master.csproj",
+        "projectPath": "E:\\internet_hr\\internet_hr\\hr-master\\hr-master.csproj",
         "packagesPath": "C:\\Users\\amarr\\.nuget\\packages\\",
-        "outputPath": "E:\\hr-master1\\hr-master\\obj\\",
+        "outputPath": "E:\\internet_hr\\internet_hr\\hr-master\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\amarr\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -44,7 +44,8 @@ namespace hr_master.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
 
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
@@ -53,7 +54,7 @@ namespace hr_master.Controllers
             var employeeinfo = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
             var admininfo = _context.AdminUser.FirstOrDefault();
 
-           var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == _clientid && x.In_Out_Status == form.In_Out_Status && x.In_Out_Date.Date == DateTime.Now.Date).ToList();
+           var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == _clientid && x.In_Out_Status == form.In_Out_Status && x.In_Out_Date.Date == time1.Date).ToList();
           
             if (inoutinfo.Count != 0)
             {
@@ -94,10 +95,10 @@ namespace hr_master.Controllers
 
             string time_fromDb = employeeinfo.Employee_In_Time;
 
-            string fromDb = DateTime.Now.Date.ToString("yyyy-MM-dd") + " " + time_fromDb;
+            string fromDb = time1.Date.ToString("yyyy-MM-dd") + " " + time_fromDb;
             DateTime FromDB = DateTime.Parse(fromDb);
 
-            DateTime DCurrent = DateTime.Parse(DateTime.Now.Date.ToString("yyyy-MM-dd HH:mm:ss"));
+            DateTime DCurrent = DateTime.Parse(time1.ToString("yyyy-MM-dd HH:mm:ss"));
 
 
             TimeSpan diffResult = DCurrent.ToUniversalTime().Subtract(FromDB.ToUniversalTime());
@@ -133,7 +134,7 @@ namespace hr_master.Controllers
                     var AddPenalties = new Penalties
                     {
                         
-                        Penalties_Date = DateTime.Now.Date,
+                        Penalties_Date = time1.Date,
                         Penalties_Note = "تأخير" + xMinites + "دقيقة" ,
                         Penalties_Price = PenaltiesPrice ,
                         Employees_Id = _clientid ,
@@ -154,12 +155,12 @@ namespace hr_master.Controllers
             var AddInOut = new InOut
             {
                distance = distansm ,
-               In_Out_Date = DateTime.Now.Date,
+               In_Out_Date = time1.Date,
                In_Out_Status = form.In_Out_Status,
                EmplyeeId = _clientid,
                Employee_Latitude = form.Employee_Latitude,
                Employee_Longitude = form.Employee_Longitude ,
-               In_Out_Time = DateTime.Now.ToString("hh:mm tt"),
+               In_Out_Time = time1.ToString("hh:mm tt"),
 
 
             };
@@ -187,7 +188,8 @@ namespace hr_master.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
 
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
@@ -197,7 +199,7 @@ namespace hr_master.Controllers
             var employeeinfo = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
             var admininfo = _context.AdminUser.FirstOrDefault();
 
-            var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == _clientid && x.In_Out_Status == form.In_Out_Status && x.In_Out_Date == form.In_Out_Date.Date).ToList();
+            var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == _clientid && x.In_Out_Status == form.In_Out_Status && x.In_Out_Date == time1.Date).ToList();
 
             if (inoutinfo.Count != 0)
             {
@@ -210,6 +212,8 @@ namespace hr_master.Controllers
                 });
 
             }
+
+
             double sLatitude = Convert.ToDouble(admininfo.Company_Latitude);
             double sLongitude = Convert.ToDouble(admininfo.Company_Longitude);
             double eLatitude = Convert.ToDouble(form.Employee_Latitude);
@@ -238,10 +242,10 @@ namespace hr_master.Controllers
 
             string time_fromDb = employeeinfo.Employee_Out_Time;
 
-            string fromDb = DateTime.Now.Date.ToString("yyyy-MM-dd") + " " + time_fromDb;
+            string fromDb = time1.Date.ToString("yyyy-MM-dd") + " " + time_fromDb;
             DateTime FromDB = DateTime.Parse(fromDb);
 
-            DateTime DCurrent = DateTime.Parse(DateTime.Now.Date.ToString("yyyy-MM-dd HH:mm:ss"));
+            DateTime DCurrent = DateTime.Parse(time1.ToString("yyyy-MM-dd HH:mm:ss"));
 
 
             TimeSpan diffResult = DCurrent.ToUniversalTime().Subtract(FromDB.ToUniversalTime());
@@ -298,12 +302,12 @@ namespace hr_master.Controllers
             var AddInOut = new InOut
             {
                 distance = distansm,
-                In_Out_Date = DateTime.Now.Date,
+                In_Out_Date = time1.Date,
                 In_Out_Status = form.In_Out_Status,
                 EmplyeeId = _clientid,
                 Employee_Latitude = form.Employee_Latitude,
                 Employee_Longitude = form.Employee_Longitude,
-                In_Out_Time = DateTime.Now.ToString("hh:mm tt"),
+                In_Out_Time = time1.ToString("hh:mm tt"),
 
 
             };
