@@ -302,6 +302,40 @@ namespace hr_master.Controllers
         //    });
         //}
 
+        [HttpPost]
+        public ActionResult<IEnumerable<string>> UnfolloweTask(Guid TaskId)
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
+            string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var _clientid = Guid.Parse(currentUserId);
+
+            var Task = _context.Tasks.Where(x => x.Id == TaskId).FirstOrDefault();
+
+
+
+
+            Task.Task_Employee_WorkOn = default;
+            Task.Task_Open = default;
+            Task.Task_Status = 1;
+
+
+            _context.Entry(Task).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = Task,
+                Error = false
+            });
+
+
+        }
+
 
         [HttpGet]
         public ActionResult<IEnumerable<string>> InternetUserById(Guid InternetUserId)
