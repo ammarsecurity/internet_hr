@@ -571,7 +571,7 @@ namespace hr_master.Controllers
             var store = _context.Stored.Where(x => x.IsDelete == false).Count();
             var storemovment = _context.StoreMovements.Where(x => x.IsDelete == false).Count();
             var EmployessSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
-           
+            
                
 
 

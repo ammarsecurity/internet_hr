@@ -1410,10 +1410,14 @@ namespace hr_master.Controllers
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
-            var Alltask = _context.Tasks.Where(x => x.IsDelete == false &&  x.Task_Employee_Open == _clientid).Count();
-            var opentask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 2 && x.Task_Employee_Open == _clientid).Count();
-            var waittask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 1 && x.Task_Employee_Open == _clientid).Count();
-            var donetask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 3 && x.Task_Employee_Open == _clientid).Count();
+
+
+            var employee = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+           
+            var Alltask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == employee.Employee_Team).Count();
+            var opentask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 2 && x.Task_part == employee.Employee_Team).Count();
+            var waittask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 1 && x.Task_part == employee.Employee_Team).Count();
+            var donetask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 3 && x.Task_part == employee.Employee_Team).Count();
             var EmployessSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
     
 
