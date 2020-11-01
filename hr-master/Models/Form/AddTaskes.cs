@@ -14,6 +14,8 @@ namespace hr_master.Models.Form
 
         public Guid Task_part { get; set; }
 
+        public Guid Task_Employee_WorkOn { get; set; }
+
         public string Task_Note { get; set; }
 
         public DateTime Task_Date { get; set; }

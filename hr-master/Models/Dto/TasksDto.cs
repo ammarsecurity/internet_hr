@@ -24,6 +24,7 @@ namespace hr_master.Models.Dto
         public string Task_closed_Note { get; set; }
 
         public string Task_Employee_WorkOn { get; set; }
+        public Guid Task_Employee_WorkOn_id { get; set; }
 
         public string Task_Employee_Open { get; set; }
 

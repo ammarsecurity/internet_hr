@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.MySql.Core;
 using hr_master.Class;
+using hr_master.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,6 +40,8 @@ namespace hr_master
             //services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
             services.AddMvc().AddWebApiConventions();
+           
+            services.AddSignalR();
             services.AddDbContext<Db.Context>(options =>
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -64,7 +67,8 @@ namespace hr_master
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API", Version = "v1" });
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
-
+            services.AddScoped<IUserConnectionManager, UserConnectionManager>();
+            services.AddScoped<IEmployeeAddTasks, EmployeeAddTasks>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(jwtBearerOptions =>
             {
                 jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
@@ -132,6 +136,7 @@ namespace hr_master
 
                 WorkerCount = 1
             });
+            app.UseRouting();
 
             app.UseCors("cross");
             app.UseMvc(routes =>
@@ -144,8 +149,20 @@ namespace hr_master
             {
                 Authorization = new[] { new MyAuthorizationFilter() }
             });
-           
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                  endpoints.MapHub<NotificationHub>("/Notification");
+                  endpoints.MapHub<NotificationUserHub>("/NotificationUserHub");
+            });
+            //app.UseEndpoints(endpoints =>
+            //{
 
+            //    endpoints.MapHub<NotificationHub>("/Notification");
+            //    endpoints.MapHub<NotificationUserHub>("/NotificationUserHub");
+            //});
         }
 
 

@@ -145,6 +145,7 @@ namespace hr_master.Controllers
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
                             InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 
@@ -226,11 +227,12 @@ namespace hr_master.Controllers
                             Task_Note = task.Task_Note,
                             Task_Open = task.Task_Open,
                             Task_Price_rewards = task.Task_Price_rewards,
-                            Tower_Name = tower.Tower_Name,
+                            Tower_Name = tower.Tower_Name ?? "لايوجد",
                             Tower_Id = tower.Id,
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
-                            InternetUserId = internetuser.Id
+                            InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 
@@ -312,11 +314,12 @@ namespace hr_master.Controllers
                             Task_Note = task.Task_Note,
                             Task_Open = task.Task_Open,
                             Task_Price_rewards = task.Task_Price_rewards,
-                            Tower_Name = tower.Tower_Name,
+                            Tower_Name = tower.Tower_Name ?? "لايوجد",
                             Tower_Id = tower.Id,
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
-                            InternetUserId = internetuser.Id
+                            InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 

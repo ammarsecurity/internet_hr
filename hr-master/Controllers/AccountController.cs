@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using hr_master.Db;
 using hr_master.Filter;
+using hr_master.Interface;
 using hr_master.Models;
 using hr_master.Models.Dto;
 using hr_master.Models.Form;
@@ -30,11 +31,14 @@ namespace hr_master.Controllers
 
         private readonly Context _context;
         private readonly IConfiguration _configuration;
-        public AccountController(Context context, IConfiguration configuration)
+        private readonly IEmployeeAddTasks _employeeAddTasks;
+        public AccountController(Context context, IConfiguration configuration, IEmployeeAddTasks employeeAddTasks )
         {
             _context = context;
             _configuration = configuration;
+            _employeeAddTasks = employeeAddTasks;
         }
+
 
 
 
@@ -641,10 +645,10 @@ namespace hr_master.Controllers
 
 
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_Employee_Open == _clientid && x.Task_Status != 3 ).CountAsync();
+            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_Employee_Open == _clientid && x.Task_Status != 3).CountAsync();
 
 
-            var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_Employee_Open == _clientid && x.Task_Status != 3 ).AsNoTracking()
+            var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_Employee_Open == _clientid && x.Task_Status != 3).AsNoTracking()
                         join Employee1 in _context.EmployessUsers.AsNoTracking() on task.Task_Employee_Open equals Employee1.Id
                         join tower in _context.Towers.AsNoTracking() on task.Tower_Id equals tower.Id into vtower
                         from tower in vtower.DefaultIfEmpty()
@@ -680,6 +684,7 @@ namespace hr_master.Controllers
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
                             InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 
@@ -727,7 +732,7 @@ namespace hr_master.Controllers
             var teams = await _context.Teams.Where(x => x.Id == Employeeinfo.Employee_Team).FirstOrDefaultAsync();
 
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3 ).CountAsync();
+            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).CountAsync();
 
 
             var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).AsNoTracking()
@@ -761,11 +766,12 @@ namespace hr_master.Controllers
                             Task_Note = task.Task_Note,
                             Task_Open = task.Task_Open,
                             Task_Price_rewards = task.Task_Price_rewards,
-                            Tower_Name = tower.Tower_Name,
+                            Tower_Name = tower.Tower_Name ?? "لايوجد",
                             Tower_Id = tower.Id,
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
-                            InternetUserId = internetuser.Id
+                            InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 
@@ -847,11 +853,12 @@ namespace hr_master.Controllers
                             Task_Note = task.Task_Note,
                             Task_Open = task.Task_Open,
                             Task_Price_rewards = task.Task_Price_rewards,
-                            Tower_Name = tower.Tower_Name,
+                            Tower_Name = tower.Tower_Name ?? "لايوجد",
                             Tower_Id = tower.Id,
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
-                            InternetUserId = internetuser.Id
+                            InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 
@@ -922,20 +929,29 @@ namespace hr_master.Controllers
 
         }
 
+
+
         [HttpPut]
-        public ActionResult<IEnumerable<string>> AddTasks([FromBody] AddTaskes form)
+        public async Task<ActionResult<IEnumerable<string>>> AddTasksAsync([FromBody] AddTaskes form)
 
         {
-            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
-            var time1 = time.AddHours(3);
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
-
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
 
 
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new Response { Message = "Error in information", Data = null, Error = true });
+            int Task_Status = 1;
+            DateTime Task_Open = default;
+            if (form.Task_Employee_WorkOn != null && form.Task_Employee_WorkOn != default)
+            {
+                Task_Status = 2;
+                Task_Open = time1;
+            }
+
 
             var NewTask = new Tasks
             {
@@ -947,32 +963,28 @@ namespace hr_master.Controllers
                 Tower_Id = form.Tower_Id,
                 Task_Note = form.Task_Note,
                 Task_EndDate = form.Task_EndDate,
-                Task_Status = 1,
+                Task_Status = Task_Status,
                 InternetUserId = form.InternetUserId,
-
-
-
+                Task_Employee_WorkOn = form.Task_Employee_WorkOn,
+                Task_Open = Task_Open
 
 
             };
-
-            _context.Tasks.Add(NewTask);
-
-            _context.SaveChanges();
-
-            var parts = _context.Teams.Where(x => x.Id == NewTask.Task_part).FirstOrDefault();
-            var noitictioneform = new NotificationsForm
+            try
             {
-
-                contents = "تم اضافة تاسك جديد",
-                headings = "يرجى الانتباه",
-                url = "http://sys.center-wifi.com",
-                included_segments = parts.Team_Roles,
+                await Task.Run(() =>
+                {
 
 
-            };
+                    _employeeAddTasks.InsertTask(NewTask);
+                    _employeeAddTasks.Save();
+                });
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
 
-            _ = SendNoitications(noitictioneform);
 
             return Ok(new Response
             {
@@ -981,6 +993,8 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
+
+    
 
 
         [HttpPut]
@@ -1945,35 +1959,7 @@ namespace hr_master.Controllers
 
             return Ok(response.Content);
         }
-        private IActionResult SendNoitications(NotificationsForm form)
-        {
-
-            var client = new RestClient(_configuration["onesginel:Url"]);
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", _configuration["onesginel:Authorization"]);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Cookie", "__cfduid=d8a2aa2f8395ad68b8fd27b63127834571600976869");
-
-            //request.AddParameter("application/json", "{\r\n\"app_id\" : \"b7d2542a-824a-4afa-9389-08880920baa8\",\r\n\"contents\" : {\"en\" : \"تم اضافة تاسك جديد\"},\r\n\"headings\" : {\"en\" : \"يرجى الانتباة\"},\r\n\"url\" : \"http://wifihr.tatwer.tech\",\r\n\"included_segments\" : [\"All\"]\r\n}", ParameterType.RequestBody);
-
-
-
-            var body = new
-            {
-                app_id = _configuration["onesginel:app_id"],
-                contents = new { en = form.contents },
-                headings = new { en = form.headings },
-                url = form.url,
-                included_segments = new string[] { form.included_segments }
-            };
-
-            request.AddJsonBody(body);
-
-            IRestResponse response = client.Execute(request);
-
-            return Ok(response.Content);
-        }
+        
 
     }
 }

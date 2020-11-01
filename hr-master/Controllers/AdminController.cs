@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using hr_master.Db;
 using hr_master.Filter;
+using hr_master.Interface;
 using hr_master.Models;
 using hr_master.Models.Dto;
 using hr_master.Models.Form;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
@@ -29,13 +31,58 @@ namespace hr_master.Controllers
 
         private readonly Context _context;
         private readonly IConfiguration _configuration;
-        public AdminController(Context context, IConfiguration configuration)
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
+        private readonly IHubContext<NotificationUserHub> _notificationUserHubContext;
+        private readonly IUserConnectionManager _userConnectionManager;
+        private readonly IEmployeeAddTasks _employeeAddTasks;
+        public AdminController(
+            Context context,
+            IConfiguration configuration,
+            IHubContext<NotificationHub> notificationHubContext,
+            IHubContext<NotificationUserHub> notificationUserHubContext,
+            IUserConnectionManager userConnectionManager,
+            IEmployeeAddTasks employeeAddTasks
+            )
         {
             _context = context;
             _configuration = configuration;
+            _notificationHubContext = notificationHubContext;
+            _notificationUserHubContext = notificationUserHubContext;
+            _userConnectionManager = userConnectionManager;
+            _employeeAddTasks = employeeAddTasks;
         }
 
-
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult> SendToSpecificUser(NotificationHubDto model)
+        {
+            var connections = _userConnectionManager.GetUserConnections(model.userId);
+            if (connections != null && connections.Count > 0)
+            {
+                foreach (var connectionId in connections)
+                {
+                    await _notificationUserHubContext.Clients.Client(connectionId).SendAsync("sendToUser", model.articleHeading, model.articleContent);
+                }
+            }
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = "",
+                Error = false
+            });
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Index(NotificationHubDto model)
+        {
+            await _notificationHubContext.Clients.All.SendAsync("sendToUser", model.articleHeading, model.articleContent);
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = "",
+                Error = false
+            });
+        }
 
 
         [HttpPost]
@@ -1079,6 +1126,7 @@ namespace hr_master.Controllers
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
                             InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn,
 
 
 
@@ -1107,29 +1155,20 @@ namespace hr_master.Controllers
 
 
         }
+
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetAllTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status)
         {
 
 
-            string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var _clientid = Guid.Parse(currentUserId);
 
-
-
-
-
-            var Employeeinfo = await _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefaultAsync();
-
-
-            var teams = await _context.Teams.Where(x => x.Id == Employeeinfo.Employee_Team).FirstOrDefaultAsync();
 
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).CountAsync();
+            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status != 3).CountAsync();
 
 
-            var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).AsNoTracking()
+            var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false &&  x.Task_Status != 3).AsNoTracking()
                         join Employee1 in _context.EmployessUsers.AsNoTracking() on task.Task_Employee_Open equals Employee1.Id
                         join tower in _context.Towers.AsNoTracking() on task.Tower_Id equals tower.Id into vtower
                         from tower in vtower.DefaultIfEmpty()
@@ -1193,29 +1232,19 @@ namespace hr_master.Controllers
 
 
         }
+
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetAllDoneTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status)
         {
 
 
-            string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var _clientid = Guid.Parse(currentUserId);
-
-
-
-
-
-            var Employeeinfo = await _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefaultAsync();
-
-
-            var teams = await _context.Teams.Where(x => x.Id == Employeeinfo.Employee_Team).FirstOrDefaultAsync();
 
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status == 3).CountAsync();
+            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 3).CountAsync();
 
 
-            var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status == 3).AsNoTracking()
+            var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_Status == 3).AsNoTracking()
                         join Employee1 in _context.EmployessUsers.AsNoTracking() on task.Task_Employee_Open equals Employee1.Id
                         join tower in _context.Towers.AsNoTracking() on task.Tower_Id equals tower.Id into vtower
                         from tower in vtower.DefaultIfEmpty()
@@ -1246,11 +1275,12 @@ namespace hr_master.Controllers
                             Task_Note = task.Task_Note,
                             Task_Open = task.Task_Open,
                             Task_Price_rewards = task.Task_Price_rewards,
-                            Tower_Name = tower.Tower_Name,
+                            Tower_Name = tower.Tower_Name ?? "لايوجد",
                             Tower_Id = tower.Id,
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
-                            InternetUserId = internetuser.Id
+                            InternetUserId = internetuser.Id,
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
 
 
 
@@ -1279,7 +1309,6 @@ namespace hr_master.Controllers
 
 
         }
-
 
 
         [HttpPut]
@@ -1357,12 +1386,12 @@ namespace hr_master.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<string>> GetEmployeeByTeam(Guid TaskId)
+        public ActionResult<IEnumerable<string>> GetEmployeeBySelectTeam(Guid TeamId)
         {
 
 
-            var task = _context.Tasks.Where(x => x.Id == TaskId).FirstOrDefault();
-            var employee = _context.EmployessUsers.Where(x => x.Employee_Team == task.Task_part).ToList();
+            var Team = _context.Teams.Where(x => x.Id == TeamId).FirstOrDefault();
+            var employee = _context.EmployessUsers.Where(x => x.Employee_Team == Team.Id).ToList();
 
 
 
@@ -1378,7 +1407,30 @@ namespace hr_master.Controllers
         }
 
 
-        [HttpDelete]
+
+            [HttpGet]
+            public ActionResult<IEnumerable<string>> GetEmployeeByTeam(Guid TaskId)
+            {
+
+
+                var task = _context.Tasks.Where(x => x.Id == TaskId).FirstOrDefault();
+                var employee = _context.EmployessUsers.Where(x => x.Employee_Team == task.Task_part).ToList();
+
+
+
+
+                return Ok(new Response
+                {
+                    Message = "Done !",
+                    Data = employee,
+                    Error = false
+                });
+
+
+            }
+
+
+            [HttpDelete]
         public ActionResult<IEnumerable<string>> Deletefollowers(Guid Id)
         {
 
@@ -1498,22 +1550,28 @@ namespace hr_master.Controllers
 
         }
         
-
+        
         [HttpPut]
-        public ActionResult<IEnumerable<string>> AddTasks([FromBody] AddTaskes form)
+        public async Task<ActionResult<IEnumerable<string>>> AddTasksAsync([FromBody] AddTaskes form)
 
         {
-
-
-
 
             var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
             var time1 = time.AddHours(3);
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
-            var NewTask = new Tasks
+            if (!ModelState.IsValid)
+                return BadRequest(new Response { Message = "Error in information", Data = null, Error = true });
+            int Task_Status = 1;
+            DateTime Task_Open = default;
+            if (form.Task_Employee_WorkOn != null && form.Task_Employee_WorkOn != default)
+            {
+                Task_Status = 2;
+                Task_Open = time1;
+            }
+              
+
+                var NewTask = new Tasks
             {
                 Task_Title = form.Task_Title,
                 Task_Date = time1,
@@ -1523,29 +1581,27 @@ namespace hr_master.Controllers
                 Tower_Id = form.Tower_Id,
                 Task_Note = form.Task_Note,
                 Task_EndDate = form.Task_EndDate,
-                Task_Status = 1,
-                InternetUserId = form.InternetUserId
+                Task_Status = Task_Status,
+                InternetUserId = form.InternetUserId,
+                Task_Employee_WorkOn = form.Task_Employee_WorkOn,
+                Task_Open = Task_Open
 
 
-            };
-
-            _context.Tasks.Add(NewTask);
-
-            _context.SaveChanges();
-            var parts = _context.Teams.Where(x => x.Id == NewTask.Task_part).FirstOrDefault();
-            var noitictioneform = new NotificationsForm
+                };
+            try
             {
+                await Task.Run(() =>
+                {
+                
 
-                contents = "تم اضافة تاسك جديد",
-                headings = "يرجى الانتباه",
-                url = "http://sys.center-wifi.com",
-                included_segments = parts.Team_Roles,
-
-
-            };
-
-            _ = SendNoitications(noitictioneform);
-
+                    _employeeAddTasks.InsertTask(NewTask);
+                    _employeeAddTasks.Save();
+                });
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
 
 
             return Ok(new Response
@@ -1874,6 +1930,7 @@ namespace hr_master.Controllers
         }
 
 
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetInOutAsync([FromQuery] PaginationFilter filter, string EmployeeName, DateTime? datefrom, DateTime? dateto ,  int? Inout_Status)
@@ -1977,36 +2034,61 @@ namespace hr_master.Controllers
         }
 
 
-
-
-        private IActionResult SendNoitications(NotificationsForm form)
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> GetEmpolyeeTaskCount()
         {
+            var list = new List<EmployeeTasksCountDto>();
 
-            var client = new RestClient(_configuration["onesginel:Url"]);
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", _configuration["onesginel:Authorization"]);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Cookie", "__cfduid=d8a2aa2f8395ad68b8fd27b63127834571600976869");
-
-            //request.AddParameter("application/json", "{\r\n\"app_id\" : \"b7d2542a-824a-4afa-9389-08880920baa8\",\r\n\"contents\" : {\"en\" : \"تم اضافة تاسك جديد\"},\r\n\"headings\" : {\"en\" : \"يرجى الانتباة\"},\r\n\"url\" : \"http://wifihr.tatwer.tech\",\r\n\"included_segments\" : [\"All\"]\r\n}", ParameterType.RequestBody);
+            string Month = DateTime.Now.Month.ToString();
+            string Year = DateTime.Now.Year.ToString();
+            string DAY = DateTime.Now.Day.ToString();
+            DateTime date = Convert.ToDateTime(DateTime.Now).Date;
 
 
+            var employee = _context.EmployessUsers.Where(x => x.IsDisplay == false).ToList();
 
-            var body = new
+           foreach(var emp in employee)
             {
-                app_id = _configuration["onesginel:app_id"],
-                contents = new { en = form.contents },
-                headings = new { en = form.headings },
-                url = form.url,
-                included_segments = new string[] { form.included_segments }
-            };
 
-            request.AddJsonBody(body);
+                var AddTaskMonth = _context.Tasks.Where(x => x.Task_Employee_Open == emp.Id && x.Task_Date.Year.ToString() == Year && x.Task_Done.Month.ToString() == Month ).Count();
+                var AddTaskToday = _context.Tasks.Where(x => x.Task_Employee_Open == emp.Id && x.Task_Date == date ).Count();
 
-            IRestResponse response = client.Execute(request);
-           
-            return Ok(response.Content);
+
+
+                var DoneTaskMonth = _context.Tasks.Where(x=> x.Task_Employee_WorkOn == emp.Id && x.Task_Done.Year.ToString() == Year && x.Task_Done.Month.ToString() == Month && x.Task_Status == 3).Count();
+                var DoneTaskToday = _context.Tasks.Where(x=> x.Task_Employee_WorkOn == emp.Id && x.Task_Done.Date == date && x.Task_Status == 3).Count();
+                var FollowerTaskMonth = _context.Tasks.Where(x=> x.Task_Employee_WorkOn == emp.Id && x.Task_Open.Year.ToString() == Year && x.Task_Open.Month.ToString() == Month && x.Task_Status == 2).Count();
+                var FollowerTaskToday = _context.Tasks.Where(x => x.Task_Employee_WorkOn == emp.Id && x.Task_Open.Date == date && x.Task_Status == 2).Count();
+
+                var count = new EmployeeTasksCountDto
+                {
+                    Employee_FullName = emp.Employee_Fullname,
+                    DoneTaskMonth = DoneTaskMonth ,
+                    FollowerTaskMonth = FollowerTaskMonth,
+                    DoneTaskToday = DoneTaskToday,
+                    FollowerTaskToday = FollowerTaskToday,
+                    AddTaskMonth = AddTaskMonth,
+                    AddTaskToday = AddTaskToday
+
+
+
+
+                };
+
+                list.Add(count);
+
+            }
+
+
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = list,
+                Error = false
+            });
+
+
         }
 
     }
