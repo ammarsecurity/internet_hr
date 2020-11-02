@@ -15,7 +15,6 @@ namespace hr_master.Interface
     {
         void InsertTask(Tasks Taskform);
         //void Update(AddTaskes specification);
-        // void Update(Invoice invoice);
         void Save();
 
        
