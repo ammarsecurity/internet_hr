@@ -52,7 +52,7 @@ namespace hr_master.Class
 
                         contents = "سينتهي الاشتراك بعد ثلاثة ايام" ,
                         headings = "يرجى الانتباه",
-                        url = "http://sys.center-wifi.com",
+                        url = "https://center-wifi.com",
                         //included_segments = "All",
                         include_external_user_ids = i.Id.ToString(),
 
@@ -73,7 +73,7 @@ namespace hr_master.Class
 
                         contents = "سينتهي الاشتراك بعد يومين",
                         headings = "يرجى الانتباه",
-                        url = "http://sys.center-wifi.com",
+                        url = "https://center-wifi.com",
                         //included_segments = "All",
                         include_external_user_ids = i.Id.ToString(),
 
@@ -85,6 +85,29 @@ namespace hr_master.Class
 
 
                 }
+
+
+                if (numberOfDays == 2)
+                {
+
+                    var noitictioneform = new NotificationsForm
+                    {
+
+                        contents = "اليوم سيتم انتهاء حسابك",
+                        headings = "يرجى الانتباه",
+                        url = "https://center-wifi.com",
+                        //included_segments = "All",
+                        include_external_user_ids = i.Id.ToString(),
+
+                    };
+
+                    _ = SendNoitications(noitictioneform);
+
+
+
+
+                }
+
 
 
 

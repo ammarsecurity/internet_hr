@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Formatting;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using hr_master.Db;
 using hr_master.Filter;
@@ -562,21 +563,44 @@ namespace hr_master.Controllers
         {
 
 
-
+            string Month = DateTime.Now.Month.ToString();
+            string Year = DateTime.Now.Year.ToString();
+           
 
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
 
+            var rawards = _context.OverTimeRewards.Where(x => x.Employees_Id == _clientid && x.OverTimeRewards_Date.Month.ToString() == Month && x.OverTimeRewards_Date.Year.ToString() == Year ).ToList();
+            decimal amontrawrad = 0;
+            foreach(var rew in rawards)
+            {
+
+                amontrawrad += rew.OverTimeRewards_Price;
+
+            }
+
+
+            var penalties = _context.Penalties.Where(x => x.Employees_Id == _clientid && x.Penalties_Date.Month.ToString() == Month && x.Penalties_Date.Year.ToString() == Year).ToList();
+            decimal amontpenalties = 0;
+            foreach (var pen in penalties)
+            {
+
+                amontpenalties += pen.Penalties_Price;
+
+            }
+
+
+
             var store = _context.Stored.Where(x => x.IsDelete == false).Count();
             var storemovment = _context.StoreMovements.Where(x => x.IsDelete == false).Count();
-            var EmployessSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
-            
-               
+            var EmployessNameSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+
+            decimal EmployessSallary = (EmployessNameSallary.Employee_Saller + amontrawrad) - amontpenalties;
 
 
 
-            var Counts = new StoreDashboardCount { AllItems = store, AllMovments = storemovment, MySallery = EmployessSallary.Employee_Saller };
+            var Counts = new StoreDashboardCount { AllItems = store, AllMovments = storemovment, MySallery = EmployessSallary };
 
             return Ok(new Response
             {

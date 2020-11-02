@@ -36,7 +36,7 @@ namespace hr_master.Controllers
         }
 
 
-    
+
 
         [HttpGet]
         public ActionResult<IEnumerable<string>> dashbardcounts()
@@ -44,18 +44,39 @@ namespace hr_master.Controllers
 
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
-            var userpart = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
 
-            var Alltask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == userpart.Employee_Team).Count();
-            var opentask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 2 && x.Task_part == userpart.Employee_Team).Count();
-            var waittask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 1 && x.Task_part == userpart.Employee_Team).Count();
-            var donetask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 3 && x.Task_part == userpart.Employee_Team).Count();
-            var EmployessSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
-    
+            string Month = DateTime.Now.Month.ToString();
+            string Year = DateTime.Now.Year.ToString();
+
+            var employee = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+
+            var Alltask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == employee.Employee_Team).Count();
+            var opentask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 2 && x.Task_part == employee.Employee_Team).Count();
+            var waittask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 1 && x.Task_part == employee.Employee_Team).Count();
+            var donetask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 3 && x.Task_part == employee.Employee_Team).Count();
+            var EmployessNameSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+
+            var rawards = _context.OverTimeRewards.Where(x => x.Employees_Id == _clientid && x.OverTimeRewards_Date.Month.ToString() == Month && x.OverTimeRewards_Date.Year.ToString() == Year).ToList();
+            decimal amontrawrad = 0;
+            foreach (var rew in rawards)
+            {
+
+                amontrawrad += rew.OverTimeRewards_Price;
+
+            }
 
 
+            var penalties = _context.Penalties.Where(x => x.Employees_Id == _clientid && x.Penalties_Date.Month.ToString() == Month && x.Penalties_Date.Year.ToString() == Year).ToList();
+            decimal amontpenalties = 0;
+            foreach (var pen in penalties)
+            {
 
-            var Counts = new SupportDashboardCounts { DoneTask = donetask, OpenTask  = opentask , Waittask = waittask , MySallery = EmployessSallary.Employee_Saller , Alltask = Alltask };
+                amontpenalties += pen.Penalties_Price;
+
+            }
+            decimal EmployessSallary = (EmployessNameSallary.Employee_Saller + amontrawrad) - amontpenalties;
+
+            var Counts = new SupportDashboardCounts { DoneTask = donetask, OpenTask = opentask, Waittask = waittask, MySallery = EmployessSallary, Alltask = Alltask };
 
             return Ok(new Response
             {
@@ -68,7 +89,7 @@ namespace hr_master.Controllers
         }
 
 
-   
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetPenaltiesAsync([FromQuery] PaginationFilter filter, DateTime? date)
         {

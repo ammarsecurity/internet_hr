@@ -754,7 +754,8 @@ namespace hr_master.Controllers
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
-
+            string Month = DateTime.Now.Month.ToString();
+            string Year = DateTime.Now.Year.ToString();
 
             var employee = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
 
@@ -762,12 +763,29 @@ namespace hr_master.Controllers
             var opentask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 2 && x.Task_part == employee.Employee_Team).Count();
             var waittask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 1 && x.Task_part == employee.Employee_Team).Count();
             var donetask = _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status == 3 && x.Task_part == employee.Employee_Team).Count();
-            var EmployessSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+            var EmployessNameSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+
+            var rawards = _context.OverTimeRewards.Where(x => x.Employees_Id == _clientid && x.OverTimeRewards_Date.Month.ToString() == Month && x.OverTimeRewards_Date.Year.ToString() == Year).ToList();
+            decimal amontrawrad = 0;
+            foreach (var rew in rawards)
+            {
+
+                amontrawrad += rew.OverTimeRewards_Price;
+
+            }
 
 
+            var penalties = _context.Penalties.Where(x => x.Employees_Id == _clientid && x.Penalties_Date.Month.ToString() == Month && x.Penalties_Date.Year.ToString() == Year).ToList();
+            decimal amontpenalties = 0;
+            foreach (var pen in penalties)
+            {
 
+                amontpenalties += pen.Penalties_Price;
 
-            var Counts = new SupportDashboardCounts { DoneTask = donetask, OpenTask = opentask, Waittask = waittask, MySallery = EmployessSallary.Employee_Saller, Alltask = Alltask };
+            }
+            decimal EmployessSallary = (EmployessNameSallary.Employee_Saller + amontrawrad) - amontpenalties;
+
+            var Counts = new SupportDashboardCounts { DoneTask = donetask, OpenTask = opentask, Waittask = waittask, MySallery = EmployessSallary , Alltask = Alltask };
 
             return Ok(new Response
             {
@@ -1167,6 +1185,7 @@ namespace hr_master.Controllers
 
             return Ok(response.Content);
         }
+
         private IActionResult SendNoiticationsforuser(NotificationsForm form)
         {
 

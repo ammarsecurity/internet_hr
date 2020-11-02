@@ -1077,6 +1077,12 @@ namespace hr_master.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> dashbardcounts()
         {
+
+
+            string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var _clientid = Guid.Parse(currentUserId);
+
+
             string Month = DateTime.Now.Month.ToString();
             string Year = DateTime.Now.Year.ToString();
             string DAY = DateTime.Now.Day.ToString();
@@ -1147,6 +1153,30 @@ namespace hr_master.Controllers
                 RevenuesToday += i.InputAndOutput_Price;
             }
 
+            var rawards = _context.OverTimeRewards.Where(x => x.Employees_Id == _clientid && x.OverTimeRewards_Date.Month.ToString() == Month && x.OverTimeRewards_Date.Year.ToString() == Year).ToList();
+            decimal amontrawrad = 0;
+            foreach (var rew in rawards)
+            {
+
+                amontrawrad += rew.OverTimeRewards_Price;
+
+            }
+
+
+            var penalties = _context.Penalties.Where(x => x.Employees_Id == _clientid && x.Penalties_Date.Month.ToString() == Month && x.Penalties_Date.Year.ToString() == Year).ToList();
+            decimal amontpenalties = 0;
+            foreach (var pen in penalties)
+            {
+
+                amontpenalties += pen.Penalties_Price;
+
+            }
+
+
+
+            var EmployessNameSallary = _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefault();
+
+            decimal MySallary = (EmployessNameSallary.Employee_Saller + amontrawrad) - amontpenalties;
 
 
             var EmployessSallary = _context.EmployessUsers.Where(x => x.IsDelete == false).ToList();
@@ -1170,6 +1200,7 @@ namespace hr_master.Controllers
                 thismonthRevenues = Revenues ,
                 ExpensesToday = ExpensesToday ,
                 RevenuesToday = RevenuesToday ,
+                MySallery = MySallary ,
             };
 
             return Ok(new Response

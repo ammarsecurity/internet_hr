@@ -570,7 +570,7 @@ namespace hr_master.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var followers = _context.TaskFollowers.Where(x => x.EmployeeId == form.EmployeeId).FirstOrDefault();
+            var followers = _context.TaskFollowers.Where(x => x.EmployeeId == form.EmployeeId && x.TaskId == form.TaskId).FirstOrDefault();
             if (followers != null)
             {
 

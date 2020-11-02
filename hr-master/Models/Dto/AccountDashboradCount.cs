@@ -11,6 +11,7 @@ namespace hr_master.Models.Dto
         public int Employeescount { get; set; }
         public decimal SallerySum { get; set; }
 
+        public decimal MySallery { get; set; }
         public decimal thismonthpenaltiesSun { get; set; }
 
         public decimal thismonthOverTimeReawradSum { get; set; }
