@@ -289,18 +289,18 @@ namespace hr_master.Controllers
 
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
+            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+            var nlist = new List<TasksDto>();
+            var totalRecords = 0;
 
-
-
-
+            if (_clientid != Guid.Parse("3ef34045-bbbb-49e6-880e-7e7bcb9c9a16")) {
 
             var Employeeinfo = await _context.EmployessUsers.Where(x => x.Id == _clientid).FirstOrDefaultAsync();
 
 
             var teams = await _context.Teams.Where(x => x.Id == Employeeinfo.Employee_Team).FirstOrDefaultAsync();
 
-            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).CountAsync();
+             totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).CountAsync();
 
 
             var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_part == teams.Id && x.Task_Status != 3).AsNoTracking()
@@ -360,8 +360,80 @@ namespace hr_master.Controllers
                 list = list.Where(s => s.Task_Status == Task_Status).ToList();
             totalRecords = list.Count();
 
+                nlist.AddRange(list);
+            }
+            else
+            {
+
+
+             
+
+                totalRecords = await _context.Tasks.Where(x => x.IsDelete == false && x.Task_Status != 3).CountAsync();
+
+
+                var list = (from task in _context.Tasks.OrderByDescending(x => x.Task_Date).Where(x => x.IsDelete == false && x.Task_Status != 3).AsNoTracking()
+                            join Employee1 in _context.EmployessUsers.AsNoTracking() on task.Task_Employee_Open equals Employee1.Id
+                            join tower in _context.Towers.AsNoTracking() on task.Tower_Id equals tower.Id into vtower
+                            from tower in vtower.DefaultIfEmpty()
+                            join Employee in _context.EmployessUsers.AsNoTracking() on task.Task_Employee_WorkOn equals Employee.Id into vEmployee
+                            from Employee in vEmployee.DefaultIfEmpty()
+                            join Employee2 in _context.EmployessUsers.AsNoTracking() on task.Task_Employee_Close equals Employee2.Id into vEmployee2
+                            from Employee2 in vEmployee2.DefaultIfEmpty()
+                            join part in _context.Teams.AsNoTracking() on task.Task_part equals part.Id
+                            join reward in _context.RewardsTable.AsNoTracking() on task.Task_Price_rewards equals reward.Id into vRewards
+                            from reward in vRewards.DefaultIfEmpty()
+                            join internetuser in _context.InternetUsers on task.InternetUserId equals internetuser.Id into vinternetuser
+                            from internetuser in vinternetuser.DefaultIfEmpty()
+
+
+                            select new TasksDto
+                            {
+                                Id = task.Id,
+                                Task_Title = task.Task_Title,
+                                Task_part = part.Team_Name,
+                                Task_Status = task.Task_Status,
+                                Task_closed_Note = task.Task_closed_Note,
+                                Task_Date = task.Task_Date,
+                                Task_Done = task.Task_Done,
+                                Task_Employee_Close = Employee2.Employee_Fullname ?? "انتظار موظف",
+                                Task_Employee_Open = Employee1.Employee_Fullname,
+                                Task_Employee_WorkOn = Employee.Employee_Fullname ?? "انتظار موظف",
+                                Task_EndDate = task.Task_EndDate,
+                                Task_Note = task.Task_Note,
+                                Task_Open = task.Task_Open,
+                                Task_Price_rewards = task.Task_Price_rewards,
+                                Tower_Name = tower.Tower_Name ?? "لايوجد",
+                                Tower_Id = tower.Id,
+                                part_Id = part.Id,
+                                Task_Price = reward.RewardsPrice,
+                                InternetUserId = internetuser.Id,
+                                Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
+
+
+
+
+
+                            }).ToList();
+
+                if (Task_Employee_WorkOn != null && Task_Employee_WorkOn != default)
+                    list = list.Where(s => s.Task_Employee_WorkOn.Contains(Task_Employee_WorkOn)).ToList();
+                totalRecords = list.Count();
+                if (Task_Employee_Open != null && Task_Employee_Open != default)
+                    list = list.Where(s => s.Task_Employee_Open.Contains(Task_Employee_Open)).ToList();
+                totalRecords = list.Count();
+                if (date != null && date != default)
+                    list = list.Where(s => s.Task_Date.Date == date).ToList();
+                totalRecords = list.Count();
+                if (Task_Status != null && Task_Status != default)
+                    list = list.Where(s => s.Task_Status == Task_Status).ToList();
+                totalRecords = list.Count();
+
+                nlist.AddRange(list);
+            }
+
+
             return Ok(new PagedResponse<List<TasksDto>>(
-                list.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList(),
+                nlist.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList(),
                 validFilter.PageNumber,
                 validFilter.PageSize,
                 totalRecords, 0, 0));
@@ -500,6 +572,11 @@ namespace hr_master.Controllers
         public async Task<ActionResult<IEnumerable<string>>> AddTasksAsync([FromBody] AddTaskes form)
 
         {
+
+
+
+
+
             string currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var _clientid = Guid.Parse(currentUserId);
 
@@ -678,6 +755,34 @@ namespace hr_master.Controllers
 
         }
 
+
+        [HttpPost]
+        public ActionResult<IEnumerable<string>> DeleteTask([FromBody] Delete form, Guid TaskId)
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+
+            var task = _context.Tasks.Where(x => x.Id == TaskId).FirstOrDefault();
+
+
+
+
+            task.IsDelete = form.IsDelete;
+
+            _context.Entry(task).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = task,
+                Error = false
+            });
+
+
+        }
 
         [HttpPost]
         public ActionResult<IEnumerable<string>> followeTask(Guid TaskId)

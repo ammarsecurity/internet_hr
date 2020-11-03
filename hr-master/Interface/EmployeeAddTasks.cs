@@ -20,8 +20,7 @@ namespace hr_master.Interface
     {
         private readonly Context _context;
         private readonly IConfiguration _configuration;
-        private bool disposing;
-        private bool _disposed;
+
 
         public EmployeeAddTasks(
            Context context,
@@ -72,13 +71,7 @@ namespace hr_master.Interface
 
     
 
-        public void Dispose()
-        {
-            if (!_disposed)
-                if (disposing)
-                    _context.Dispose();
-            _disposed = true;
-        }
+      
 
 
         private async Task<bool> SendNoitications(NotificationsForm form)
@@ -121,5 +114,9 @@ namespace hr_master.Interface
             }
 
         }
+
+
+
+  
     }
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace hr_master.Interface
 {
   
-    public interface IEmployeeAddTasks : IDisposable
+    public interface IEmployeeAddTasks 
     {
         void InsertTask(Tasks Taskform);
         //void Update(AddTaskes specification);
