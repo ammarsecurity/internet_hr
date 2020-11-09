@@ -268,9 +268,9 @@ namespace hr_master.Controllers
 
             xMinites += xTime;
 
-            var late = _context.OverTime.ToList();
+            var OverTime = _context.OverTime.ToList();
             decimal OverTimePrice = 0;
-            foreach (var i in late)
+            foreach (var i in OverTime)
             {
                 if ((i.formtime) <= xMinites && xMinites <= i.totime)
                 {
@@ -293,6 +293,39 @@ namespace hr_master.Controllers
 
                     _context.SaveChanges();
                 }
+
+            }
+
+          if(FromDB < DCurrent)
+            {
+                var late = _context.ScheduleDelayPenalties.ToList();
+                decimal PenaltiesPrice = 0;
+                foreach (var i in late)
+                {
+                    if ((i.formtime) <= xMinites && xMinites <= i.totime)
+                    {
+
+                        PenaltiesPrice = i.PenaltiesPrice;
+
+
+                        var AddPenalties = new Penalties
+                        {
+
+                            Penalties_Date = time1.Date,
+                            Penalties_Note = "خروج قبل الوقت بـ" + xMinites + "دقيقة" ,
+                            Penalties_Price = PenaltiesPrice,
+                            Employees_Id = _clientid,
+                            Penalties_Enterid = Guid.Parse("3ef34045-bbbb-49e6-880e-7e7bcb9c9a16"),
+
+                        };
+
+                        _context.Penalties.Add(AddPenalties);
+
+                        _context.SaveChanges();
+                    }
+
+                }
+
 
             }
 

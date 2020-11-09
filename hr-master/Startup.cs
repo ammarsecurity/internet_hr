@@ -96,7 +96,8 @@ namespace hr_master
                     "http://wifi.tatwer.tech",
                     "http://wifihr.tatwer.tech",
                     "https://sys.center-wifi.com",
-                    "https://backent.center-wifi.com"
+                    "https://backent.center-wifi.com",
+                    "http://localhost:4200"
 
 )
                     .AllowAnyMethod()
