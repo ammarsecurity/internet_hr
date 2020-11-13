@@ -247,56 +247,85 @@ namespace hr_master.Controllers
 
             DateTime DCurrent = DateTime.Parse(time1.ToString("yyyy-MM-dd HH:mm:ss"));
 
-
+            int xMinites = 0;
             TimeSpan diffResult = DCurrent.ToUniversalTime().Subtract(FromDB.ToUniversalTime());
-            string x = diffResult.ToString();
-
-
-
-            string nHour = x.Substring(0, 2);
-            int xHour;
-
-            if (!int.TryParse(nHour, out xHour))
-                xHour = 0;
-
-            int xMinites = xHour * 60;
-
-            string ntime = x.Substring(3, 2);
-            int xTime;
-            if (!int.TryParse(ntime, out xTime))
-                xTime = 0;
-
-            xMinites += xTime;
-
-            var OverTime = _context.OverTime.ToList();
-            decimal OverTimePrice = 0;
-            foreach (var i in OverTime)
+            if(diffResult < TimeSpan.Zero)
             {
-                if ((i.formtime) <= xMinites && xMinites <= i.totime)
-                {
+                TimeSpan tidiffResult1 = (diffResult * (-1));
+                string x = tidiffResult1.ToString();
+                string nHour = x.Substring(0, 2);
+                int xHour;
 
-                    OverTimePrice = i.OverTimePrice;
+                if (!int.TryParse(nHour, out xHour))
+                    xHour = 0;
 
+                xMinites = xHour * 60;
 
-                    var AddOverTimeRewards = new OverTimeRewards
-                    {
+                string ntime = x.Substring(3, 2);
+                int xTime;
+                if (!int.TryParse(ntime, out xTime))
+                    xTime = 0;
 
-                        OverTimeRewards_Date = DateTime.Now.Date,
-                        OverTimeRewards_Note = "اضافة فوق وقت انتهاء العمل" + xMinites + "دقيقة",
-                        OverTimeRewards_Price = i.OverTimePrice,
-                        Employees_Id = _clientid,
-                        OverTimeRewards_Enterid = Guid.Parse("3ef34045-bbbb-49e6-880e-7e7bcb9c9a16"),
-
-                    };
-
-                    _context.OverTimeRewards.Add(AddOverTimeRewards);
-
-                    _context.SaveChanges();
-                }
+                xMinites += xTime;
 
             }
+            else
+            {
 
-          if(FromDB < DCurrent)
+                string x = diffResult.ToString();
+
+
+
+                string nHour = x.Substring(0, 2);
+                int xHour;
+
+                if (!int.TryParse(nHour, out xHour))
+                    xHour = 0;
+
+                xMinites = xHour * 60;
+
+                string ntime = x.Substring(3, 2);
+                int xTime;
+                if (!int.TryParse(ntime, out xTime))
+                    xTime = 0;
+
+                xMinites += xTime;
+            }
+          
+            if(DCurrent > FromDB)
+            {
+
+                var OverTime = _context.OverTime.ToList();
+                decimal OverTimePrice = 0;
+                foreach (var i in OverTime)
+                {
+                    if ((i.formtime) <= xMinites && xMinites <= i.totime)
+                    {
+
+                        OverTimePrice = i.OverTimePrice;
+
+
+                        var AddOverTimeRewards = new OverTimeRewards
+                        {
+
+                            OverTimeRewards_Date = DateTime.Now.Date,
+                            OverTimeRewards_Note = "اضافة فوق وقت انتهاء العمل" + xMinites + "دقيقة",
+                            OverTimeRewards_Price = i.OverTimePrice,
+                            Employees_Id = _clientid,
+                            OverTimeRewards_Enterid = Guid.Parse("3ef34045-bbbb-49e6-880e-7e7bcb9c9a16"),
+
+                        };
+
+                        _context.OverTimeRewards.Add(AddOverTimeRewards);
+
+                        _context.SaveChanges();
+                    }
+
+                }
+            }
+            
+
+          if(FromDB > DCurrent)
             {
                 var late = _context.ScheduleDelayPenalties.ToList();
                 decimal PenaltiesPrice = 0;

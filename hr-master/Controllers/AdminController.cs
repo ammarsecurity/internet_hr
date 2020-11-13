@@ -1499,14 +1499,129 @@ namespace hr_master.Controllers
 
 
         }
-        
-        
+
+
+
+        [HttpPut]
+        public ActionResult<IEnumerable<string>> AddFingerPrintIn(Guid EmployeeId)
+
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
+
    
+            var admininfo = _context.AdminUser.FirstOrDefault();
+            var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == EmployeeId && x.In_Out_Status == 0 && x.In_Out_Date.Date == time1.Date).ToList();
+
+            if (inoutinfo.Count != 0)
+            {
+
+                return BadRequest(new Response
+                {
+                    Message = "لقد قمت بالصمة سابقا",
+                    Data = "",
+                    Error = true
+                });
+
+            }
+           
+
+            var AddInOut = new InOut
+            {
+                distance = 0,
+                In_Out_Date = time1.Date,
+                In_Out_Status = 0 ,
+                EmplyeeId = EmployeeId,
+                Employee_Latitude = admininfo.Company_Latitude,
+                Employee_Longitude = admininfo.Company_Longitude,
+                In_Out_Time = time1.ToString("hh:mm tt"),
+
+
+            };
+
+            _context.InOut.Add(AddInOut);
+
+            _context.SaveChanges();
+
+
+            _context.SaveChanges();
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = "Thanks",
+                Error = false
+            });
+        }
+
+
+
+        [HttpPut]
+        public ActionResult<IEnumerable<string>> AddFingerPrintOut(Guid EmployeeId)
+
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time1 = time.AddHours(3);
+
+        
+            var admininfo = _context.AdminUser.FirstOrDefault();
+
+            var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == EmployeeId && x.In_Out_Status == 1 && x.In_Out_Date == time1.Date).ToList();
+
+            if (inoutinfo.Count != 0)
+            {
+
+                return BadRequest(new Response
+                {
+                    Message = "لقد قمت بالصمة سابقا",
+                    Data = "",
+                    Error = true
+                });
+
+            }
+
+
+          
+
+            var AddInOut = new InOut
+            {
+                distance = 0,
+                In_Out_Date = time1.Date,
+                In_Out_Status = 1 ,
+                EmplyeeId = EmployeeId,
+                Employee_Latitude = admininfo.Company_Latitude,
+                Employee_Longitude = admininfo.Company_Longitude,
+                In_Out_Time = time1.ToString("hh:mm tt"),
+
+
+            };
+
+            _context.InOut.Add(AddInOut);
+
+            _context.SaveChanges();
+
+
+            _context.SaveChanges();
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = "Thanks",
+                Error = false
+            });
+        }
 
 
 
 
-
+        private double deg2rad(double sLatitude)
+        {
+            throw new NotImplementedException();
+        }
 
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetInOutInMap()
