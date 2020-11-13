@@ -1350,13 +1350,6 @@ namespace hr_master.Controllers
             });
         }
 
-
-       
-
-
-    
-
-
        
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetEmployeeByTeam(Guid TaskId)
@@ -1380,7 +1373,9 @@ namespace hr_master.Controllers
             }
 
 
-            [HttpDelete]
+
+
+        [HttpDelete]
         public ActionResult<IEnumerable<string>> Deletefollowers(Guid Id)
         {
 
@@ -1503,16 +1498,16 @@ namespace hr_master.Controllers
 
 
         [HttpPut]
-        public ActionResult<IEnumerable<string>> AddFingerPrintIn(Guid EmployeeId)
+        public ActionResult<IEnumerable<string>> AddFingerPrintIn(Guid EmployeeId , DateTime Date )
 
         {
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time = TimeZoneInfo.ConvertTimeToUtc(Date);
             var time1 = time.AddHours(3);
 
-   
+            var emp = _context.EmployessUsers.Where(x => x.Id == EmployeeId).FirstOrDefault();
             var admininfo = _context.AdminUser.FirstOrDefault();
             var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == EmployeeId && x.In_Out_Status == 0 && x.In_Out_Date.Date == time1.Date).ToList();
 
@@ -1537,7 +1532,7 @@ namespace hr_master.Controllers
                 EmplyeeId = EmployeeId,
                 Employee_Latitude = admininfo.Company_Latitude,
                 Employee_Longitude = admininfo.Company_Longitude,
-                In_Out_Time = time1.ToString("hh:mm tt"),
+                In_Out_Time = emp.Employee_In_Time,
 
 
             };
@@ -1559,16 +1554,16 @@ namespace hr_master.Controllers
 
 
         [HttpPut]
-        public ActionResult<IEnumerable<string>> AddFingerPrintOut(Guid EmployeeId)
+        public ActionResult<IEnumerable<string>> AddFingerPrintOut(Guid EmployeeId ,DateTime Date)
 
         {
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var time = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
+            var time = TimeZoneInfo.ConvertTimeToUtc(Date);
             var time1 = time.AddHours(3);
 
-        
+            var emp = _context.EmployessUsers.Where(x => x.Id == EmployeeId).FirstOrDefault();
             var admininfo = _context.AdminUser.FirstOrDefault();
 
             var inoutinfo = _context.InOut.Where(x => x.EmplyeeId == EmployeeId && x.In_Out_Status == 1 && x.In_Out_Date == time1.Date).ToList();
@@ -1596,7 +1591,7 @@ namespace hr_master.Controllers
                 EmplyeeId = EmployeeId,
                 Employee_Latitude = admininfo.Company_Latitude,
                 Employee_Longitude = admininfo.Company_Longitude,
-                In_Out_Time = time1.ToString("hh:mm tt"),
+                In_Out_Time = emp.Employee_Out_Time,
 
 
             };
@@ -1615,6 +1610,27 @@ namespace hr_master.Controllers
             });
         }
 
+
+
+        [HttpDelete]
+        public ActionResult<IEnumerable<string>> DeleteFingerPrint(Guid Id)
+        {
+
+
+            var InOut = _context.InOut.Where(x => x.Id == Id).FirstOrDefault();
+            _context.InOut.Remove(InOut);
+            _context.SaveChanges();
+
+
+            return Ok(new Response
+            {
+                Message = "Done !",
+                Data = InOut,
+                Error = false
+            });
+
+
+        }
 
 
 
