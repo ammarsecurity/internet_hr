@@ -828,7 +828,7 @@ namespace hr_master.Controllers
 
                 contents = notifications ,
                 headings = "يرجى الانتباه",
-                url = "https://sys.center-wifi.com",
+                url = "https://center-wifi.com",
                 ///included_segments = "All",
                 include_external_user_ids = InternetUserId.ToString()
 
@@ -876,6 +876,23 @@ namespace hr_master.Controllers
             _context.Entry(InternetUsers).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             _context.SaveChanges();
 
+
+
+            var noitictioneform = new NotificationsForm
+            {
+
+                contents = "تم اعادة تفعيل اشتراكك - شركة واي فاي لخدمات الانترنت",
+                headings = "يرجى الانتباه",
+                url = "https://center-wifi.com",
+                ///included_segments = "All",
+                include_external_user_ids = InternetUserId.ToString()
+
+
+            };
+
+
+
+            _ = SendNoiticationsforuser(noitictioneform);
             return Ok(new Response
             {
                 Message = "Done !",
