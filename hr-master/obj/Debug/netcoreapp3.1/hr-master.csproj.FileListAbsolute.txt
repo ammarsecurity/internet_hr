@@ -207,7 +207,6 @@ E:\hr-master1\hr-master\obj\Debug\netcoreapp3.1\hr-master.genruntimeconfig.cache
 E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\appsettings.Development.json
 E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\appsettings.json
 E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\libman.json
-E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\Properties\launchSettings.json
 E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\hr-master.exe
 E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\hr-master.deps.json
 E:\internet_hr\internet_hr\hr-master\bin\Debug\netcoreapp3.1\hr-master.runtimeconfig.json
@@ -308,3 +307,4 @@ E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.dll
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.pdb
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.genruntimeconfig.cache
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.csprojAssemblyReference.cache
+E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\scopedcss\bundle\hr-master.styles.css

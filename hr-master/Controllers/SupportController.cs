@@ -652,6 +652,18 @@ namespace hr_master.Controllers
 
         {
 
+            var towers = _context.Towers.Where(x => x.Tower_Name == form.Tower_Name).FirstOrDefault();
+            if(towers != null)
+            {
+
+                return BadRequest(new Response
+                {
+                    Message = "البرج موجود مسبقا",
+                    Data = towers,
+                    Error = true
+                });
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
