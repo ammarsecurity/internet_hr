@@ -102,7 +102,6 @@ C:\Users\Ammar\source\repos\hr-master\hr-master\obj\Release\netcoreapp3.1\hr-mas
 C:\Users\Ammar\source\repos\hr-master\hr-master\obj\Release\netcoreapp3.1\hr-master.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Ammar\source\repos\hr-master\hr-master\obj\Release\netcoreapp3.1\hr-master.MvcApplicationPartsAssemblyInfo.cache
 E:\internet_hr\internet_hr\hr-master\bin\Release\netcoreapp3.1\appsettings.Development.json
-E:\internet_hr\internet_hr\hr-master\bin\Release\netcoreapp3.1\Properties\launchSettings.json
 E:\internet_hr\internet_hr\hr-master\bin\Release\netcoreapp3.1\appsettings.json
 E:\internet_hr\internet_hr\hr-master\bin\Release\netcoreapp3.1\hr-master.exe
 E:\internet_hr\internet_hr\hr-master\bin\Release\netcoreapp3.1\hr-master.deps.json
@@ -205,3 +204,4 @@ E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\hr-master.dll
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\hr-master.pdb
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\hr-master.genruntimeconfig.cache
 E:\internet_hr\internet_hr\hr-master\bin\Release\netcoreapp3.1\libman.json
+E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\scopedcss\bundle\hr-master.styles.css
