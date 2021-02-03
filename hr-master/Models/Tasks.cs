@@ -17,6 +17,7 @@ namespace hr_master.Models
         public Guid Task_Price_rewards { get; set; }
 
         public Guid Task_part { get; set; }
+        public Guid Task_Open_Part { get; set; }
 
         public string Task_Note { get; set; }
 

@@ -80,10 +80,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeletePenalties([FromBody] Delete form, Guid PenaltiesId)
         {
@@ -147,7 +143,6 @@ namespace hr_master.Controllers
 
 
         }
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeleteRewards([FromBody] Delete form, Guid RewardsId)
         {
@@ -175,7 +170,6 @@ namespace hr_master.Controllers
 
 
         }
-
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddPenalties([FromBody] AddPenalties form)
 
@@ -217,9 +211,6 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
-
-
-
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddRewards([FromBody] OverTimeRewards form)
 
@@ -261,8 +252,6 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllEmployees()
         {
@@ -281,12 +270,7 @@ namespace hr_master.Controllers
 
 
         }
-
-
-        
-
-        [AllowAnonymous]
-         [HttpGet]
+        [HttpGet]
         public ActionResult<IEnumerable<string>> Fetchingsalaries(DateTime date)
         {
 
@@ -345,9 +329,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddAccountersDoor([FromBody] AddAccountersDoor form)
 
@@ -381,9 +362,6 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> EditAccountersDoor([FromBody] AddAccountersDoor form, Guid PartId)
         {
@@ -415,9 +393,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddInputAndOutput([FromBody] AddInputAndOutput form)
 
@@ -450,8 +425,6 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> CloseTask([FromBody] CloseDto from, Guid TaskId)
         {
@@ -526,8 +499,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllAccountersDoor()
         {
@@ -546,10 +517,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-    
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> InternetUserById(Guid InternetUserId)
         {
@@ -568,7 +535,6 @@ namespace hr_master.Controllers
 
 
         }
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> AllInternetUser()
         {
@@ -587,11 +553,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetInputAndOutput([FromQuery] PaginationFilter filter, DateTime? date , int? InputAndOutputStatus)
         {
@@ -633,14 +594,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
-
-
-
-
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddInternetUser([FromBody] AddInternetUser form)
 
@@ -688,10 +641,6 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
-
-
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetTowers()
         {
@@ -710,9 +659,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> InternetUser([FromQuery] PaginationFilter filter, string User_Name, DateTime? date, string User_FullName, bool? IsActive)
         {
@@ -764,8 +710,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> EditInternetUser([FromBody] AddInternetUser form, Guid InternetUserId)
         {
@@ -805,10 +749,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> Sendnotifications( Guid InternetUserId , string notifications)
         {
@@ -848,9 +788,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> ActiveInternetUser([FromBody] ActiveInternetUser form, Guid InternetUserId)
         {
@@ -902,8 +839,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeleteInternetUser([FromBody] Delete form, Guid InternetUserId)
         {
@@ -931,7 +866,6 @@ namespace hr_master.Controllers
 
 
         }
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetTowerById(Guid TowerId)
         {
@@ -950,8 +884,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
         [HttpPost]
         public async Task<IActionResult> UploadAttachment(List<IFormFile> files, Guid ItemId)
         {
@@ -996,11 +928,6 @@ namespace hr_master.Controllers
                 Error = false
             });
         }
-
-
-
-        
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAttachment(Guid ItemId)
         {
@@ -1026,9 +953,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeletePart([FromBody] Delete form, Guid PartId)
         {
@@ -1056,10 +980,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeleteInputAndOutput([FromBody] Delete form, Guid InputAndOutput)
         {
@@ -1087,10 +1007,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> dashbardcounts()
         {
@@ -1229,9 +1145,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllTeams()
         {
@@ -1248,9 +1161,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> SendToInternetUserList([FromBody] List<InternetUsers> from, string notifications)
         {
@@ -1294,9 +1204,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-      
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllRewards()
         {
