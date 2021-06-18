@@ -306,5 +306,5 @@ E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\staticwebassets\hr-
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.dll
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.pdb
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.genruntimeconfig.cache
-E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.csprojAssemblyReference.cache
 E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\scopedcss\bundle\hr-master.styles.css
+E:\internet_hr\internet_hr\hr-master\obj\Debug\netcoreapp3.1\hr-master.csproj.AssemblyReference.cache
