@@ -20,6 +20,7 @@ namespace hr_master.Models.Dto
         public Guid part_Id { get; set; }
 
         public string Task_Note { get; set; }
+        public string InternetUserName { get; set; }
 
         public string Task_closed_Note { get; set; }
 

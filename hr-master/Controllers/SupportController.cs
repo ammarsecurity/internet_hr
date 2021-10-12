@@ -67,8 +67,6 @@ namespace hr_master.Controllers
 
         }
 
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllRewards()
         {
@@ -87,9 +85,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetAllTower([FromQuery] PaginationFilter filter, string TowerName)
@@ -130,10 +125,6 @@ namespace hr_master.Controllers
 
         }
 
-
-
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetTowers()
         {
@@ -152,8 +143,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
 
         [HttpPut]
         public ActionResult<IEnumerable<string>> AddTowerBroadcasting([FromBody] List<AddTowerBroadcasting> form)
@@ -274,7 +263,6 @@ namespace hr_master.Controllers
             });
         }
 
-
         [HttpPost]
         public ActionResult<IEnumerable<string>> EditTowerBroadcasting([FromBody] AddTowerBroadcasting form, Guid BroadcastingId)
         {
@@ -309,7 +297,6 @@ namespace hr_master.Controllers
 
 
         }
-
 
         [HttpPost]
         public ActionResult<IEnumerable<string>> EditTowerElectrical([FromBody] AddTowerElectrical form, Guid ElectricalId)
@@ -434,10 +421,6 @@ namespace hr_master.Controllers
 
         }
 
-
-
-
-
         [HttpDelete]
         public ActionResult<IEnumerable<string>> DeleteTowerNote(Guid TowerNoteId)
         {
@@ -499,8 +482,6 @@ namespace hr_master.Controllers
 
         }
 
-
-
         [HttpGet]
         public ActionResult<IEnumerable<string>> AllInternetUser()
         {
@@ -519,10 +500,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
 
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeleteTower([FromBody] Delete form, Guid Towerid)
@@ -551,10 +528,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
-
-
 
         [HttpPost]
         public ActionResult<IEnumerable<string>> DeleteTask([FromBody] Delete form, Guid TaskId)

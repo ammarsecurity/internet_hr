@@ -186,8 +186,8 @@ namespace hr_master.Controllers
         {
 
 
-            var Team = _context.Teams.Where(x => x.Id == TeamId).FirstOrDefault();
-            var employee = _context.EmployessUsers.Where(x => x.Employee_Team == Team.Id).ToList();
+            var Team = _context.Teams.Where(x => x.Id == TeamId && x.IsDelete == false).FirstOrDefault();
+            var employee = _context.EmployessUsers.Where(x => x.Employee_Team == Team.Id && x.IsDelete == false).ToList();
 
 
 
@@ -204,7 +204,7 @@ namespace hr_master.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetMyTeamTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status)
+        public async Task<ActionResult<IEnumerable<string>>> GetMyTeamTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status , Guid? Tower_Id, Guid? InternetUserId)
         {
 
 
@@ -253,7 +253,8 @@ namespace hr_master.Controllers
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
                             InternetUserId = internetuser.Id,
-                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn,
+                            InternetUserName = internetuser.User_Name ?? "لايوجد"
 
 
 
@@ -264,12 +265,23 @@ namespace hr_master.Controllers
             if (Task_Employee_WorkOn != null && Task_Employee_WorkOn != default)
                 list = list.Where(s => s.Task_Employee_WorkOn.Contains(Task_Employee_WorkOn)).ToList();
             totalRecords = list.Count();
+
+            if (Tower_Id != null && Tower_Id != default )
+                list = list.Where(s => s.Tower_Id == Tower_Id).ToList();
+            totalRecords = list.Count();
+
+            if (InternetUserId != null && InternetUserId != default)
+                list = list.Where(s => s.InternetUserId == InternetUserId).ToList();
+            totalRecords = list.Count();
+
             if (Task_Employee_Open != null && Task_Employee_Open != default)
                 list = list.Where(s => s.Task_Employee_Open.Contains(Task_Employee_Open)).ToList();
             totalRecords = list.Count();
+
             if (date != null && date != default)
                 list = list.Where(s => s.Task_Date.Date == date).ToList();
             totalRecords = list.Count();
+
             if (Task_Status != null && Task_Status != default)
                 list = list.Where(s => s.Task_Status == Task_Status).ToList();
             totalRecords = list.Count();
@@ -284,7 +296,7 @@ namespace hr_master.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetMyAllTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status)
+        public async Task<ActionResult<IEnumerable<string>>> GetMyAllTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status, Guid? Tower_Id, Guid? InternetUserId)
         {
 
 
@@ -332,7 +344,8 @@ namespace hr_master.Controllers
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
                             InternetUserId = internetuser.Id,
-                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn,
+                            InternetUserName = internetuser.User_Name ?? "لايوجد"
 
 
 
@@ -352,6 +365,13 @@ namespace hr_master.Controllers
             if (Task_Status != null && Task_Status != default)
                 list = list.Where(s => s.Task_Status == Task_Status).ToList();
             totalRecords = list.Count();
+            if (Tower_Id != null && Tower_Id != default)
+                list = list.Where(s => s.Tower_Id == Tower_Id).ToList();
+            totalRecords = list.Count();
+
+            if (InternetUserId != null && InternetUserId != default)
+                list = list.Where(s => s.InternetUserId == InternetUserId).ToList();
+            totalRecords = list.Count();
 
             return Ok(new PagedResponse<List<TasksDto>>(
                 list.Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList(),
@@ -363,7 +383,7 @@ namespace hr_master.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status)
+        public async Task<ActionResult<IEnumerable<string>>> GetAllTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status, Guid? Tower_Id, Guid? InternetUserId)
         {
 
 
@@ -429,8 +449,8 @@ namespace hr_master.Controllers
                             part_Id = part.Id,
                             Task_Price = reward.RewardsPrice,
                             InternetUserId = internetuser.Id,
-                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
-
+                            Task_Employee_WorkOn_id = task.Task_Employee_WorkOn,
+                             InternetUserName = internetuser.User_Name ?? "لايوجد"
 
 
 
@@ -449,6 +469,13 @@ namespace hr_master.Controllers
             if (Task_Status != null && Task_Status != default)
                 list = list.Where(s => s.Task_Status == Task_Status).ToList();
             totalRecords = list.Count();
+                if (Tower_Id != null && Tower_Id != default)
+                    list = list.Where(s => s.Tower_Id == Tower_Id).ToList();
+                totalRecords = list.Count();
+
+                if (InternetUserId != null && InternetUserId != default)
+                    list = list.Where(s => s.InternetUserId == InternetUserId).ToList();
+                totalRecords = list.Count();
 
                 nlist.AddRange(list);
             }
@@ -497,8 +524,8 @@ namespace hr_master.Controllers
                                 part_Id = part.Id,
                                 Task_Price = reward.RewardsPrice,
                                 InternetUserId = internetuser.Id,
-                                Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
-
+                                Task_Employee_WorkOn_id = task.Task_Employee_WorkOn,
+                                 InternetUserName = internetuser.User_Name ?? "لايوجد"
 
 
 
@@ -517,6 +544,13 @@ namespace hr_master.Controllers
                 if (Task_Status != null && Task_Status != default)
                     list = list.Where(s => s.Task_Status == Task_Status).ToList();
                 totalRecords = list.Count();
+                if (Tower_Id != null && Tower_Id != default)
+                    list = list.Where(s => s.Tower_Id == Tower_Id).ToList();
+                totalRecords = list.Count();
+
+                if (InternetUserId != null && InternetUserId != default)
+                    list = list.Where(s => s.InternetUserId == InternetUserId).ToList();
+                totalRecords = list.Count();
 
                 nlist.AddRange(list);
             }
@@ -532,7 +566,7 @@ namespace hr_master.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllDoneTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status)
+        public async Task<ActionResult<IEnumerable<string>>> GetAllDoneTask([FromQuery] PaginationFilter filter, string Task_Employee_WorkOn, DateTime? date, string Task_Employee_Open, int? Task_Status, Guid? Tower_Id, Guid? InternetUserId)
         {
 
 
@@ -600,8 +634,8 @@ namespace hr_master.Controllers
                                 part_Id = part.Id,
                                 Task_Price = reward.RewardsPrice,
                                 InternetUserId = internetuser.Id,
-                                Task_Employee_WorkOn_id = task.Task_Employee_WorkOn
-
+                                Task_Employee_WorkOn_id = task.Task_Employee_WorkOn,
+                                 InternetUserName = internetuser.User_Name ?? "لايوجد"
 
 
 
@@ -619,6 +653,13 @@ namespace hr_master.Controllers
                 totalRecords = list.Count();
                 if (Task_Status != null && Task_Status != default)
                     list = list.Where(s => s.Task_Status == Task_Status).ToList();
+                totalRecords = list.Count();
+                if (Tower_Id != null && Tower_Id != default)
+                    list = list.Where(s => s.Tower_Id == Tower_Id).ToList();
+                totalRecords = list.Count();
+
+                if (InternetUserId != null && InternetUserId != default)
+                    list = list.Where(s => s.InternetUserId == InternetUserId).ToList();
                 totalRecords = list.Count();
 
                 nlist.AddRange(list);
@@ -688,7 +729,13 @@ namespace hr_master.Controllers
                 if (Task_Status != null && Task_Status != default)
                     list = list.Where(s => s.Task_Status == Task_Status).ToList();
                 totalRecords = list.Count();
+                if (Tower_Id != null && Tower_Id != default)
+                    list = list.Where(s => s.Tower_Id == Tower_Id).ToList();
+                totalRecords = list.Count();
 
+                if (InternetUserId != null && InternetUserId != default)
+                    list = list.Where(s => s.InternetUserId == InternetUserId).ToList();
+                totalRecords = list.Count();
                 nlist.AddRange(list);
 
 
@@ -703,8 +750,6 @@ namespace hr_master.Controllers
 
 
         }
-
-
 
         [HttpPost]
         public ActionResult<IEnumerable<string>> EditTask([FromBody] EditTask form, Guid Taskid)
