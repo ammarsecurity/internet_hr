@@ -50,6 +50,7 @@ E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroo
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\c7e5d3ee-cc01-41db-840c-bf49f4abd112.png
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\de933430-50b2-4b01-96d3-650892166170.png
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\e1250701-b97f-4705-8d10-1e6fc4952068.pdf
+E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\e2fc2fce-aca5-400b-ab1e-76a2fbd68d6c.png
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\ea576619-df69-4aa4-9117-bebf87330550.png
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\ee768679-e1bb-48e9-830f-40b1cc9cde2f.png
 E:\internet_hr\internet_hr\hr-master\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\Attachments\f4eafbdb-fd91-4b9f-8edc-cfb6abbc40d3.png
