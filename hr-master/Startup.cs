@@ -94,7 +94,9 @@ namespace hr_master
                     "http://localhost:8081",
                     "http://localhost",    
                     "http://wifi.tatwer.tech",
+                    "https://wifi.tatwer.tech",
                     "http://wifihr.tatwer.tech",
+                    "https://wifihr.tatwer.tech",
                     "https://sys.center-wifi.com",
                     "https://backent.center-wifi.com",
                     "http://localhost:4200"
